@@ -1,102 +1,164 @@
 (import 'mixin.libsonnet') + {
   prometheus+:: {
-    local p = self,
+    serviceCilium: {
+      apiVersion: 'v1',
+      kind: 'Service',
+      metadata: {
+        labels: {
+          'k8s-app': 'cilium',
+        },
+        name: 'cilium-agent',
+        namespace: $._config.cilium.namespace,
+      },
+      spec: {
+        clusterIP: 'None',
+        ports: [
+          {
+            name: 'metrics',
+            port: 9090,
+            protocol: 'TCP',
+            targetPort: 'prometheus',
+          },
+          {
+            name: 'envoy-metrics',
+            port: 9095,
+            protocol: 'TCP',
+            targetPort: 'envoy-metrics',
+          },
+        ],
+        selector: {
+          'k8s-app': 'cilium',
+        },
+        type: 'ClusterIP',
+      },
+    },
+
+    serviceCiliumOperator: {
+      apiVersion: 'v1',
+      kind: 'Service',
+      metadata: {
+        labels: {
+          'io.cilium/app': 'operator',
+          name: 'cilium-operator',
+        },
+        name: 'cilium-operator',
+        namespace: $._config.cilium.namespace,
+      },
+      spec: {
+        clusterIP: 'None',
+        ports: [
+          {
+            name: 'metrics',
+            port: 6942,
+            protocol: 'TCP',
+            targetPort: 'prometheus',
+          },
+        ],
+        selector: {
+          'io.cilium/app': 'operator',
+          name: 'cilium-operator',
+        },
+        type: 'ClusterIP',
+      },
+    },
 
     serviceMonitorCilium: {
-      "apiVersion": "monitoring.coreos.com/v1",
-      "kind": "ServiceMonitor",
-      "metadata": {
-        "name": "cilium-agent",
-        "namespace": p.namespace
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'ServiceMonitor',
+      metadata: {
+        name: 'cilium-agent',
+        namespace: $._config.cilium.namespace,
       },
-      "spec": {
-        "endpoints": [
+      spec: {
+        endpoints: [
           {
-            "honorLabels": true,
-            "interval": "10s",
-            "path": "/metrics",
-            "port": "prometheus"
-          }
+            honorLabels: true,
+            interval: '10s',
+            path: '/metrics',
+            port: 'prometheus',
+          },
         ],
-        "namespaceSelector": {
-          "matchNames": [
-            $._config.cilium.namespace
-          ]
+        namespaceSelector: {
+          matchNames: [
+            $._config.cilium.namespace,
+          ],
         },
-        "selector": {
-          "matchLabels": {
-            "k8s-app": "cilium"
-          }
-        }
-      }
+        selector: {
+          matchLabels: {
+            'k8s-app': 'cilium',
+          },
+        },
+        targetLabels: ['k8s-app'],
+      },
     },
 
     serviceMonitorCiliumOperator: {
-      "apiVersion": "monitoring.coreos.com/v1",
-      "kind": "ServiceMonitor",
-      "metadata": {
-        "name": "cilium-operator",
-        "namespace": p.namespace,
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'ServiceMonitor',
+      metadata: {
+        name: 'cilium-operator',
+        namespace: $._config.cilium.namespace,
       },
-      "spec": {
-        "endpoints": [
+      spec: {
+        endpoints: [
           {
-            "honorLabels": true,
-            "interval": "10s",
-            "path": "/metrics",
-            "port": "prometheus"
-          }
+            honorLabels: true,
+            interval: '10s',
+            path: '/metrics',
+            port: 'prometheus',
+          },
         ],
-        "namespaceSelector": {
-          "matchNames": [
-            $._config.cilium.namespace
-          ]
+        namespaceSelector: {
+          matchNames: [
+            $._config.cilium.namespace,
+          ],
         },
-        "selector": {
-          "matchLabels": {
-            "io.cilium/app": "operator",
-            "name": "cilium-operator"
-          }
-        }
-      }
+        selector: {
+          matchLabels: {
+            'io.cilium/app': 'operator',
+            name: 'cilium-operator',
+          },
+        },
+        targetLabels: ['io.cilium/app'],
+      },
     },
 
     [if $._config.cilium.enableHubble then 'serviceMonitorHubble']: {
-      "apiVersion": "monitoring.coreos.com/v1",
-      "kind": "ServiceMonitor",
-      "metadata": {
-        "name": "hubble",
-        "namespace": p.namespace
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'ServiceMonitor',
+      metadata: {
+        name: 'hubble',
+        namespace: $._config.cilium.namespace,
       },
-      "spec": {
-        "endpoints": [
+      spec: {
+        endpoints: [
           {
-            "honorLabels": true,
-            "interval": "10s",
-            "path": "/metrics",
-            "port": "hubble-metrics",
-            "relabelings": [
+            honorLabels: true,
+            interval: '10s',
+            path: '/metrics',
+            port: 'hubble-metrics',
+            relabelings: [
               {
-                "replacement": "${1}",
-                "sourceLabels": [
-                  "__meta_kubernetes_pod_node_name"
+                replacement: '${1}',
+                sourceLabels: [
+                  '__meta_kubernetes_pod_node_name',
                 ],
-                "targetLabel": "node"
-              }
-            ]
-          }
+                targetLabel: 'node',
+              },
+            ],
+          },
         ],
-        "namespaceSelector": {
-          "matchNames": [
-            $._config.cilium.namespace
-          ]
+        namespaceSelector: {
+          matchNames: [
+            $._config.cilium.namespace,
+          ],
         },
-        "selector": {
-          "matchLabels": {
-            "k8s-app": "cilium"
-          }
-        }
-      }
+        selector: {
+          matchLabels: {
+            'k8s-app': 'cilium',
+          },
+        },
+      },
     },
-  }
+  },
 }
