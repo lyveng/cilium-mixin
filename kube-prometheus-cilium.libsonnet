@@ -75,7 +75,7 @@
             honorLabels: true,
             interval: '10s',
             path: '/metrics',
-            port: 'prometheus',
+            port: 'metrics',
           },
         ],
         namespaceSelector: {
@@ -105,7 +105,7 @@
             honorLabels: true,
             interval: '10s',
             path: '/metrics',
-            port: 'prometheus',
+            port: 'metrics',
           },
         ],
         namespaceSelector: {
