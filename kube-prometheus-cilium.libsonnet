@@ -68,6 +68,10 @@
       metadata: {
         name: 'cilium-agent',
         namespace: $._config.cilium.namespace,
+        labels: {
+          k8s-app: 'cilium-agent',
+          'app.kubernetes.io/name': 'cilium-agent',
+        },
       },
       spec: {
         endpoints: [
@@ -98,6 +102,10 @@
       metadata: {
         name: 'cilium-operator',
         namespace: $._config.cilium.namespace,
+        labels: {
+          k8s-app: 'cilium-operator',
+          'app.kubernetes.io/name': 'cilium-operator',
+        },
       },
       spec: {
         endpoints: [
