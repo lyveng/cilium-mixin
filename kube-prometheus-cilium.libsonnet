@@ -137,6 +137,10 @@
       metadata: {
         name: 'hubble',
         namespace: $._config.cilium.namespace,
+        labels: {
+          k8s-app: 'hubble',
+          'app.kubernetes.io/name': 'hubble',
+        },
       },
       spec: {
         endpoints: [
