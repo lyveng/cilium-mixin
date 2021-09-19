@@ -69,7 +69,7 @@
         name: 'cilium-agent',
         namespace: $._config.cilium.namespace,
         labels: {
-          k8s-app: 'cilium-agent',
+          'k8s-app': 'cilium-agent',
           'app.kubernetes.io/name': 'cilium-agent',
         },
       },
@@ -103,7 +103,7 @@
         name: 'cilium-operator',
         namespace: $._config.cilium.namespace,
         labels: {
-          k8s-app: 'cilium-operator',
+          'k8s-app': 'cilium-operator',
           'app.kubernetes.io/name': 'cilium-operator',
         },
       },
@@ -138,7 +138,7 @@
         name: 'hubble',
         namespace: $._config.cilium.namespace,
         labels: {
-          k8s-app: 'hubble',
+          'k8s-app': 'hubble',
           'app.kubernetes.io/name': 'hubble',
         },
       },
